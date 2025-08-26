@@ -1,0 +1,88 @@
+name: build-test-publish
+on:
+  push:
+    branches: [main]     # Auto-versionado en CI
+    tags: ['v*']         # Releases estables por tag (v1.2.3)
+  workflow_dispatch: # Para lanzar manualmente
+
+permissions:
+  contents: read
+  packages: write   # necesario para publicar a GitHub Packages
+
+env:
+  PROJECT_PATH: src/UNIR.TFE.Polyrepo.Multiplication.Module/UNIR.TFE.Polyrepo.Multiplication.Module.csproj
+  TEST_PATH: test/UNIR.TFE.Polyrepo.Multiplication.Module.Test/UNIR.TFE.Polyrepo.Multiplication.Module.Test.csproj
+  BASE_VERSION: "0.0"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET + Auth to GH Packages
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+          source-url: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+        env:
+          # setup-dotnet usa este token para el feed anterior
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine package version
+        id: ver
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            # Caso 1: release estable por tag vX.Y.Z
+            VERSION="${GITHUB_REF_NAME#v}"
+            echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
+            echo "RELEASE_KIND=tag" >> $GITHUB_ENV
+          else
+            # Caso 2: auto-versionado en CI (main)
+            # Resultado: X.Y.<run_number>  (ej. 0.0.57)
+            VERSION="${BASE_VERSION}.${GITHUB_RUN_NUMBER}"
+            echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
+            echo "RELEASE_KIND=ci" >> $GITHUB_ENV
+          fi
+          echo "Version => ${VERSION}"
+
+      - name: Restore
+        run: |
+          dotnet restore $PROJECT_PATH \
+            --source "https://api.nuget.org/v3/index.json" \
+            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+          dotnet restore $TEST_PATH \
+            --source "https://api.nuget.org/v3/index.json" \
+            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+
+      - name: Test (unit tests + coverage)
+        run: |
+          dotnet test $TEST_PATH -c Release \
+            --logger "trx;LogFileName=test-results.trx" \
+            --results-directory ./test-results \
+            --collect:"XPlat Code Coverage"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            ./test-results
+            **/TestResults/**/*.trx
+            **/TestResults/**/*.xml
+            
+      - name: Pack
+        run: |
+          dotnet pack $PROJECT_PATH -c Release -o ./artifacts \
+            /p:Version=$PACKAGE_VERSION /p:PackageVersion=$PACKAGE_VERSION
+
+      - name: Publish to GitHub Packages
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet nuget push "./artifacts/*.nupkg" \
+            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+            --skip-duplicate
