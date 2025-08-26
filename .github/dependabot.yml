@@ -1,0 +1,24 @@
+version: 2
+
+registries:
+  gh-nuget-ajunquit:
+    type: nuget-feed
+    url: https://nuget.pkg.github.com/ajunquit/index.json
+    username: ajunquit
+    password: ${{secrets.GH_PACKAGES_TOKEN}}  # secreto de Dependabot
+
+updates:
+  # 1) Proyecto principal
+  - package-ecosystem: nuget
+    directory: "/src/UNIR.TFE.Polyrepo.Multiplication.Module"
+    registries:
+      - gh-nuget-ajunquit
+    allow:
+      - dependency-name: "UNIR.TFE.Polyrepo.Shared"
+    schedule:
+      interval: daily
+      time: "09:00"
+      timezone: "America/Guayaquil"
+    open-pull-requests-limit: 5
+    target-branch: "main"
+    labels: ["dependencies", "nuget"]
