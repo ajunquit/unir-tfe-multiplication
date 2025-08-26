@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36408.4
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{9B045019-031B-4A44-9CDD-4A03128FDA7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UNIR.TFE.Polyrepo.Multiplication.Module", "src\UNIR.TFE.Polyrepo.Multiplication.Module\UNIR.TFE.Polyrepo.Multiplication.Module.csproj", "{BBBEC33A-3E78-4F89-84EB-63F421F0C532}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UNIR.TFE.Polyrepo.Multiplication.Module.Test", "test\UNIR.TFE.Polyrepo.Multiplication.Module.Test\UNIR.TFE.Polyrepo.Multiplication.Module.Test.csproj", "{FDF88354-8404-4917-A79D-2A8B793D5D0B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BBBEC33A-3E78-4F89-84EB-63F421F0C532}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBBEC33A-3E78-4F89-84EB-63F421F0C532}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBBEC33A-3E78-4F89-84EB-63F421F0C532}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBBEC33A-3E78-4F89-84EB-63F421F0C532}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDF88354-8404-4917-A79D-2A8B793D5D0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDF88354-8404-4917-A79D-2A8B793D5D0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDF88354-8404-4917-A79D-2A8B793D5D0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDF88354-8404-4917-A79D-2A8B793D5D0B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BBBEC33A-3E78-4F89-84EB-63F421F0C532} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{FDF88354-8404-4917-A79D-2A8B793D5D0B} = {9B045019-031B-4A44-9CDD-4A03128FDA7B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {72DBCDBC-B24D-4E32-93E7-710AD3BAE8D4}
+	EndGlobalSection
+EndGlobal
