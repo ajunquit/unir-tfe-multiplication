@@ -3,11 +3,11 @@ on:
   push:
     branches: [main]     # Auto-versionado en CI
     tags: ['v*']         # Releases estables por tag (v1.2.3)
-  workflow_dispatch: # Para lanzar manualmente
+  workflow_dispatch:     # Para lanzar manualmente
 
 permissions:
   contents: read
-  packages: write   # necesario para publicar a GitHub Packages
+  packages: write        # necesario para publicar a GitHub Packages
 
 env:
   PROJECT_PATH: src/UNIR.TFE.Polyrepo.Multiplication.Module/UNIR.TFE.Polyrepo.Multiplication.Module.csproj
@@ -64,6 +64,26 @@ jobs:
             --results-directory ./test-results \
             --collect:"XPlat Code Coverage"
 
+      # ---- Resumen de cobertura + HTML como artefacto ----
+      - name: Generate coverage summary
+        uses: danielpalme/ReportGenerator-GitHub-Action@v5
+        with:
+          # Soporta tanto carpeta 'test-results' como 'TestResults' (por si cambia)
+          reports: 'test-results/**/coverage.cobertura.xml;**/TestResults/**/coverage.cobertura.xml'
+          targetdir: 'coveragereport'
+          reporttypes: 'MarkdownSummary;HtmlInline_AzurePipelines'
+
+      - name: Add coverage to Job Summary
+        run: |
+          echo "## Code Coverage" >> $GITHUB_STEP_SUMMARY
+          cat coveragereport/Summary.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload coverage HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: coveragereport
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -72,8 +92,8 @@ jobs:
           path: |
             ./test-results
             **/TestResults/**/*.trx
-            **/TestResults/**/*.xml
-            
+            **/TestResults/**/coverage.cobertura.xml
+
       - name: Pack
         run: |
           dotnet pack $PROJECT_PATH -c Release -o ./artifacts \
