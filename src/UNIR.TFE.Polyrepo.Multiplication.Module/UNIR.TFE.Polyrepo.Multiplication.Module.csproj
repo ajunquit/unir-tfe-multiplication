@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="UNIR.TFE.Polyrepo.Shared" Version="0.0.39" />
+    <PackageReference Include="UNIR.TFE.Polyrepo.Shared" Version="0.0.43" />
   </ItemGroup>
 
 </Project>
